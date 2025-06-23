@@ -1,0 +1,46 @@
+services:
+  app:
+    image: ${REGISTRY}/${PHP_IMAGE_NAME}:${TAG:-latest}
+    container_name: laravel_app
+    restart: unless-stopped
+    working_dir: /var/www
+    env_file: .env
+    volumes:
+      - laravel_storage:/var/www/storage
+      - laravel_public:/var/www/public
+    networks:
+      - laravel_network
+    depends_on:
+      - redis
+
+nginx:
+  image: ${REGISTRY}/${NGINX_IMAGE_NAME}:${TAG:-latest}
+  container_name: laravel_nginx
+  restart: unless-stopped
+  ports:
+    - "80:80"
+  volumes:
+    - laravel_storage:/var/www/storage:ro
+    - laravel_public:/var/www/public:ro
+  networks:
+    - laravel_network
+  depends_on:
+    - app
+
+  redis:
+    image: redis:alpine
+    container_name: laravel_redis
+    restart: unless-stopped
+    networks:
+      - laravel_network
+    volumes:
+      - redis_data:/data
+
+networks:
+  laravel_network:
+    driver: bridge
+
+volumes:
+  laravel_storage:
+  laravel_public:
+  redis_data:
