@@ -37,7 +37,12 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+        $quote = Inspiring::quotes()->random();
+        $message = 'Keep your face always toward the sunshine—and shadows will fall behind you.';
+        $author = 'Walt Whitman';
+        if (is_string($quote)) {
+            [$message, $author] = str($quote)->explode('-');
+        }
 
         return [
             ...parent::share($request),
