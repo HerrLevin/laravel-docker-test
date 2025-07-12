@@ -23,5 +23,13 @@ jobs:
       - name: Run composer install
         run: composer install -n --prefer-dist
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+
+      - name: Build npm
+        run: npm run build
+
       - name: Run tests
         run: vendor/bin/phpunit
