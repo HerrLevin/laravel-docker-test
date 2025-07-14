@@ -3,7 +3,9 @@ name: Docker Build & Push
 on:
   push:
     tags:
-      - '*'
+      - "v*.*.*"
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       tag:
@@ -35,8 +37,11 @@ jobs:
           context: ./
           file: Dockerfile
           push: true
+          images: |
+            herrlevin/laravel-docker-text
           tags: |
-            {IMAGE_REPOSITORY}/{IMAGE_NAME}:{{ github.event.inputs.tag || github.ref_name }}
+            type=ref,event=branch
+            type=semver,pattern={{version}}
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.2
         with:
