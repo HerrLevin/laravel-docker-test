@@ -22,7 +22,7 @@ supervisord -c /etc/supervisord.conf &
 echo "Running Laravel artisan commands..."
 
 # echo "Running migrations..."
-# php artisan migrate --force
+php artisan migrate --force
 
 echo "Clearing caches..."
 php artisan optimize
