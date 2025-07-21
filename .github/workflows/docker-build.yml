@@ -24,6 +24,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            herrlevin/laravel-docker-text
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=raw,value=${{ github.event.inputs.tag || 'dev' }}
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -36,13 +47,10 @@ jobs:
         with:
           context: ./
           file: Dockerfile
-          push: true
-          images: |
-            herrlevin/laravel-docker-text
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=raw,value=${{ github.event.inputs.tag || 'dev' }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+            
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.2
         with:
