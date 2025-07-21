@@ -6,6 +6,9 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Stage 2: Build PHP application
 FROM php:8.4-fpm-alpine
+ARG RUNTIME_UID=33
+ARG RUNTIME_GID=33
+
 
 # Install required system dependencies
 RUN apk add --no-cache \
@@ -30,6 +33,9 @@ RUN docker-php-ext-install \
         intl \
         opcache
 
+RUN groupmod --gid ${RUNTIME_GID} www-data \
+    && usermod --uid ${RUNTIME_UID} --gid ${RUNTIME_GID} www-data
+
 # Set working directory
 WORKDIR /var/www/html
 
@@ -48,10 +54,10 @@ RUN set -e \
   && PHP_LOG_DIR="/var/log/php" \
   && NGINX_LOG_DIR="/var/log/nginx" \
   && NGINX_LIB_DIR="/var/lib/nginx" \
-  && install -d -o www-data -g www-data -m 775 /var/www/html/storage /var/www/html/bootstrap/cache $NGINX_LIB_DIR/logs $NGINX_LIB_DIR/tmp /run/nginx \
-  && install -d -o www-data -g www-data -m 755 /var/run/php $PHP_LOG_DIR $NGINX_LOG_DIR $NGINX_LIB_DIR /run/nginx \
+  && install -d -o ${RUNTIME_UID} -g ${RUNTIME_GID} -m 775 /var/www/html/storage /var/www/html/bootstrap/cache $NGINX_LIB_DIR/logs $NGINX_LIB_DIR/tmp /run/nginx \
+  && install -d -o ${RUNTIME_UID} -g ${RUNTIME_GID} -m 755 /var/run/php $PHP_LOG_DIR $NGINX_LOG_DIR $NGINX_LIB_DIR /run/nginx \
   && touch $PHP_LOG_DIR/php-fpm.log $PHP_LOG_DIR/php-fpm.err $NGINX_LOG_DIR/error.log $NGINX_LOG_DIR/access.log \
-  && chown www-data:www-data $PHP_LOG_DIR/php-fpm.log $PHP_LOG_DIR/php-fpm.err $NGINX_LOG_DIR/error.log $NGINX_LOG_DIR/access.log \
+  && chown ${RUNTIME_UID}:$RUNTIME_GID $PHP_LOG_DIR/php-fpm.log $PHP_LOG_DIR/php-fpm.err $NGINX_LOG_DIR/error.log $NGINX_LOG_DIR/access.log \
   && chmod 664 $PHP_LOG_DIR/php-fpm.log $PHP_LOG_DIR/php-fpm.err $NGINX_LOG_DIR/error.log $NGINX_LOG_DIR/access.log
 
 # Exclude SQLite database file
@@ -66,6 +72,9 @@ COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+RUN chown -R ${RUNTIME_UID}:${RUNTIME_GID} .
+USER ${RUNTIME_UID}:${RUNTIME_GID}
 
 # Expose ports
 EXPOSE 80

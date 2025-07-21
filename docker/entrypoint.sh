@@ -11,6 +11,12 @@ if [ ! -f /var/www/html/database/database.sqlite ]; then
   touch /var/www/html/database/database.sqlite
 fi
 
+if [ ! -f /var/www/html/.env ]; then
+  echo "Environment file not found. Copying example..."
+  cp /var/www/html/.env.example.prod /var/www/html/.env
+  php artisan key:generate
+fi
+
 # Set correct permissions
 chown -R www-data:www-data /var/www/html/database/database.sqlite
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
