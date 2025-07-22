@@ -12,9 +12,11 @@ if [ ! -f /var/www/html/database/database.sqlite ]; then
 fi
 
 if [ ! -f /var/www/html/.env ]; then
-  echo "Environment file not found. Copying example..."
-  cp /var/www/html/.env.example.prod /var/www/html/.env
-  php artisan key:generate
+  echo "Environment file not found. Creating a new one..."
+  touch /var/www/html/.env
+  echo "APP_ENV=production" >> /var/www/html/.env
+  echo "APP_DEBUG=false" >> /var/www/html/.env
+  echo "APP_KEY=base64:$(openssl rand -base64 32)" > /var/www/html/.env
 fi
 
 # Set correct permissions

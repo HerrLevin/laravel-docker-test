@@ -12,26 +12,28 @@ ARG RUNTIME_GID=33
 
 # Install required system dependencies
 RUN apk add --no-cache \
-    nginx \
-    supervisor \
+    bash \
     icu-dev \
+    libpq-dev \
     libzip-dev \
-    zlib-dev \
+    nginx \
+    nodejs \
+    npm \
     oniguruma-dev \
     shadow \
-    bash \
     sqlite-dev \
-    nodejs \
-    npm
+    supervisor \
+    zlib-dev
 
 # Install required PHP extensions
 RUN docker-php-ext-install \
         bcmath \
-        pdo_mysql \
-        pdo_sqlite \
-        zip \
         intl \
-        opcache
+        opcache \
+        pdo_mysql \
+        pdo_pgsql \
+        pdo_sqlite \
+        zip
 
 RUN groupmod --gid ${RUNTIME_GID} www-data \
     && usermod --uid ${RUNTIME_UID} --gid ${RUNTIME_GID} www-data
