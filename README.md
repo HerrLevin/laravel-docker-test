@@ -13,6 +13,7 @@ This repository is my attempt to create a simple, working example of a Laravel a
 - [ ] Logging to the container
 - [ ] Better health checks
 - [ ] Maybe monitoring with Prometheus and Grafana?
+- [ ] Multiple build targets (arm64, x86_64, etc.)
 
 ## Special Thanks
 The dockerfile and GitHub pipelines are heavily inspired by the work of [@paulund](https://github.com/paulund) described in their blog post [Laravel Docker Deployment - Automated CI/CD with GitHub Actions](https://paulund.co.uk/laravel-docker-deployment).
