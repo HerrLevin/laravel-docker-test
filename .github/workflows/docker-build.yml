@@ -60,5 +60,5 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ${{ secrets.PATH_TO_LARAVEL_PROJECT }}
-            docker compose -f docker-compose.production.yml pull
-            docker compose -f docker-compose.production.yml up -d
+            docker compose -f compose.yml pull
+            docker compose -f compose.yml up -d

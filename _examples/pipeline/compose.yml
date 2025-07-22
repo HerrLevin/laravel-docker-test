@@ -1,0 +1,29 @@
+services:
+  app:
+    image: herrlevin/laravel-docker-test:dev
+    container_name: laravel_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    env_file: .env.example
+    networks:
+      - laravel_network
+    depends_on:
+      - database
+
+  database:
+    image: postgres
+    container_name: laravel_database
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: laravel_db
+    ports:
+      - "5432:5432"
+    networks:
+      - laravel_network
+
+networks:
+  laravel_network:
+    driver: bridge
